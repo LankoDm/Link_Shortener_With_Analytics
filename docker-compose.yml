@@ -9,7 +9,7 @@ services:
     depends_on:
       - db
     command: >
-      bash -c "docker-php-ext-install pdo_mysql && apache2-foreground"
+      bash -c "sed -i 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/000-default.conf && a2enmod rewrite && docker-php-ext-install pdo_mysql && apache2-foreground"
 
   db:
     image: mysql:8.0
