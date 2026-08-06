@@ -1,7 +1,26 @@
 <?php
 
-require __DIR__ . '/../src/Database.php';
+require_once __DIR__ . '/../src/Database.php';
 
 $db = connectDB();
 
-echo "Ура! Ми успішно підключилися до бази в Docker!";
+$request = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+
+if ($request === '/' || $request === '/index.php') {
+    require_once __DIR__ . '/../views/home.php';
+} elseif($request === '/save') {
+    require_once __DIR__ . '/../src/UrlManager.php';
+} elseif($request === '/login') {
+    require_once __DIR__ . '/../views/login.php';
+} elseif($request === '/register') {
+    require_once __DIR__ . '/../views/register.php';
+} elseif($request === '/register-process') {
+    require_once __DIR__ . '/../src/Register.php';
+    createNewUser($db);
+    header("Location: /login");
+    exit;
+} elseif($request === '/login-process') {
+    require_once __DIR__ . '/../src/Login.php';
+} else {
+    echo "Сторінка не знайдена";
+}
