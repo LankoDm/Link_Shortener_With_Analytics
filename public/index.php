@@ -9,22 +9,32 @@ $db = connectDB();
 $request = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
 if ($request === '/' || $request === '/index.php') {
+    $userLinks = [];
+
+    if (isset($_SESSION['user']['id'])) {
+        require_once __DIR__ . '/../src/UrlManager.php';
+        $userLinks = generateShortUrlForUser($db);
+    }
+
     require_once __DIR__ . '/../views/home.php';
-} elseif($request === '/save') {
+} elseif ($request === '/save') {
     require_once __DIR__ . '/../src/UrlManager.php';
-} elseif($request === '/login') {
+    saveUrl($db);
+} elseif ($request === '/login') {
     require_once __DIR__ . '/../views/login.php';
-} elseif($request === '/register') {
+} elseif ($request === '/register') {
     require_once __DIR__ . '/../views/register.php';
-} elseif($request === '/register-process') {
+} elseif ($request === '/register-process') {
     require_once __DIR__ . '/../src/Register.php';
     createNewUser($db);
-} elseif($request === '/login-process') {
+} elseif ($request === '/login-process') {
     require_once __DIR__ . '/../src/Login.php';
     loginUser($db);
-} elseif($request === '/logout') {
+} elseif ($request === '/logout') {
     require_once __DIR__ . '/../src/Login.php';
     logout();
 } else {
-    echo "Сторінка не знайдена";
+    $shortCode = ltrim($request, '/');
+    require_once __DIR__ . '/../src/UrlManager.php';
+    redirectByShortCode($db, $shortCode);
 }
