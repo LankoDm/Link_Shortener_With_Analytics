@@ -27,3 +27,10 @@ function loginUser($dbConnection)
         exit;
     }
 }
+
+function logout()
+{
+    session_destroy();
+    header('Location: /');
+    exit;
+}

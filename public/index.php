@@ -21,6 +21,10 @@ if ($request === '/' || $request === '/index.php') {
     createNewUser($db);
 } elseif($request === '/login-process') {
     require_once __DIR__ . '/../src/Login.php';
+    loginUser($db);
+} elseif($request === '/logout') {
+    require_once __DIR__ . '/../src/Login.php';
+    logout();
 } else {
     echo "Сторінка не знайдена";
 }
