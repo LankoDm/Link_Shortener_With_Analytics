@@ -17,11 +17,11 @@ function loginUser($dbConnection)
     $user->execute(['email' => $email]);
     $dataUser = $user->fetch();
 
-    if($dataUser && password_verify($password, $dataUser['password_hash'])){
+    if ($dataUser && password_verify($password, $dataUser['password_hash'])) {
         $_SESSION['user']['id'] = $dataUser['id'];
         header('Location: /');
         exit;
-    }else{
+    } else {
         $_SESSION['ErrorMessage'] = ["Неправильний логін або пароль"];
         header("Location: /login");
         exit;

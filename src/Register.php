@@ -10,12 +10,12 @@ function createNewUser($dbConnection)
             VALUES (:login, :password, :email)";
 
     $user = $dbConnection->prepare($query);
-    try{
+    try {
         $user->execute(['login' => $login, 'password' => $password, 'email' => $email]);
         $_SESSION['SuccessMessage'] = ["Реєстрація успішна! Тепер ви можете увійти."];
         header("Location: /login");
         exit;
-    }catch(PDOException $e){
+    } catch (PDOException $e) {
         if ($e->getCode() == 23000) {
             $_SESSION['ErrorMessage'] = ["Користувач з таким email або логіном вже існує!"];
             header("Location: /register");
