@@ -1,5 +1,7 @@
 <?php
 
+session_start();
+
 require_once __DIR__ . '/../src/Database.php';
 
 $db = connectDB();
@@ -17,8 +19,6 @@ if ($request === '/' || $request === '/index.php') {
 } elseif($request === '/register-process') {
     require_once __DIR__ . '/../src/Register.php';
     createNewUser($db);
-    header("Location: /login");
-    exit;
 } elseif($request === '/login-process') {
     require_once __DIR__ . '/../src/Login.php';
 } else {
