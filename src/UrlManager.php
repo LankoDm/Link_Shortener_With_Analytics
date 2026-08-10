@@ -36,7 +36,7 @@ function generateShortUrlForUser($dbConnection)
     $host = $_SERVER['HTTP_HOST'];
     $arrayCustomLinks = [];
 
-    $query = "SELECT links.original_url, links.short_code, COUNT(clicks.id) as clicks_count FROM links LEFT JOIN clicks ON links.id = clicks.link_id WHERE links.user_id = :user_id GROUP BY links.id";
+    $query = "SELECT links.id, links.original_url, links.short_code, COUNT(clicks.id) as clicks_count FROM links LEFT JOIN clicks ON links.id = clicks.link_id WHERE links.user_id = :user_id GROUP BY links.id";
 
     $result = $dbConnection->prepare($query);
     $result->execute(['user_id' => $_SESSION['user']['id']]);
@@ -44,6 +44,7 @@ function generateShortUrlForUser($dbConnection)
 
     foreach ($arrayLinksFromDB as $value) {
         $arrayCustomLinks[] = [
+            'link_id' => $value['id'],
             'short_url' => 'http://' . $host . '/' . $value['short_code'],
             'original_url' => $value['original_url'],
             'clicks_count' => $value['clicks_count']
@@ -78,4 +79,24 @@ function statsAboutClick($dbConnection, $id)
 
     $clicks = $dbConnection->prepare($queryInsert);
     $clicks->execute(['link_id' => $id, 'ip_address' => $ipAddress, 'user_agent' => $userAgent]);
+}
+
+function deleteLinkForUser($link_id, $user_id, $dbConnection)
+{
+    $query = "DELETE FROM links WHERE id = :id AND user_id = :user_id";
+    $result = $dbConnection->prepare($query);
+    try {
+        $result->execute(['id' => $link_id, 'user_id' => $user_id]);
+        if ($result->rowCount() > 0) {
+            $_SESSION['SuccessMessage'] = ["Посилання успішно видалено!"];
+        } else {
+            $_SESSION['ErrorMessage'] = ["Посилання не знайдено або у вас немає прав на його видалення."];
+        }
+        header('Location: /');
+        exit;
+    } catch (PDOException $e) {
+        $_SESSION['ErrorMessage'] = ["Сталась помилка, ми це вирішуємо!"];
+        header('Location: /');
+        exit;
+    }
 }

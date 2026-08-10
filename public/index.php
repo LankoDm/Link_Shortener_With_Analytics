@@ -33,6 +33,9 @@ if ($request === '/' || $request === '/index.php') {
 } elseif ($request === '/logout') {
     require_once __DIR__ . '/../src/Login.php';
     logout();
+} elseif ($request === '/delete') {
+    require_once __DIR__ . '/../src/UrlManager.php';
+    deleteLinkForUser($_POST['link_id'], $_SESSION['user']['id'], $db);
 } else {
     $shortCode = ltrim($request, '/');
     require_once __DIR__ . '/../src/UrlManager.php';
