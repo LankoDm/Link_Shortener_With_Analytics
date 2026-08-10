@@ -16,7 +16,7 @@ function saveUrl($dbConnection)
         $result->execute(['short_code' => $shortCode]);
     } while ($result->fetchColumn() > 0);
 
-    $query = "INSERT INTO links (user_id, original_url, short_code) VALUE (:user_id, :original_url, :short_code)";
+    $query = "INSERT INTO links (user_id, original_url, short_code) VALUES (:user_id, :original_url, :short_code)";
 
     $link = $dbConnection->prepare($query);
     try {
@@ -36,16 +36,18 @@ function generateShortUrlForUser($dbConnection)
     $host = $_SERVER['HTTP_HOST'];
     $arrayCustomLinks = [];
 
-    $query = "SELECT * FROM links WHERE user_id = :user_id";
+    $query = "SELECT links.original_url, links.short_code, COUNT(clicks.id) as clicks_count FROM links LEFT JOIN clicks ON links.id = clicks.link_id WHERE links.user_id = :user_id GROUP BY links.id";
 
     $result = $dbConnection->prepare($query);
     $result->execute(['user_id' => $_SESSION['user']['id']]);
     $arrayLinksFromDB = $result->fetchAll();
 
     foreach ($arrayLinksFromDB as $value) {
-        $arrayCustomLinks[] =
-            ['short_url' => 'http://' . $host . '/' . $value['short_code'],
-                'original_url' => $value['original_url']];
+        $arrayCustomLinks[] = [
+            'short_url' => 'http://' . $host . '/' . $value['short_code'],
+            'original_url' => $value['original_url'],
+            'clicks_count' => $value['clicks_count']
+        ];
     }
 
     return $arrayCustomLinks;
@@ -53,15 +55,27 @@ function generateShortUrlForUser($dbConnection)
 
 function redirectByShortCode($dbConnection, $shortCode)
 {
-    $query = "SELECT * FROM links WHERE short_code = :short_code";
+    $query = "SELECT id, original_url FROM links WHERE short_code = :short_code";
     $result = $dbConnection->prepare($query);
     $result->execute(['short_code' => $shortCode]);
     $link = $result->fetch();
 
     if ($link) {
+        $idLinks = $link['id'];
+        statsAboutClick($dbConnection, $idLinks);
         header("Location: {$link['original_url']}");
         exit;
     } else {
         echo "Такой страницы не существует";
     }
+}
+
+function statsAboutClick($dbConnection, $id)
+{
+    $ipAddress = $_SERVER['REMOTE_ADDR'];
+    $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? "NULL";
+    $queryInsert = "INSERT INTO clicks (link_id, ip_address, user_agent) VALUES (:link_id, :ip_address, :user_agent)";
+
+    $clicks = $dbConnection->prepare($queryInsert);
+    $clicks->execute(['link_id' => $id, 'ip_address' => $ipAddress, 'user_agent' => $userAgent]);
 }
