@@ -67,7 +67,9 @@ function redirectByShortCode($dbConnection, $shortCode)
         header("Location: {$link['original_url']}");
         exit;
     } else {
-        echo "Такой страницы не существует";
+        $_SESSION['ErrorMessage'] = ["Сторінку не знайдено!"];
+        header('Location: /');
+        exit;
     }
 }
 

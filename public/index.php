@@ -25,13 +25,13 @@ if ($request === '/' || $request === '/index.php') {
     require_once __DIR__ . '/../src/UrlManager.php';
     saveUrl($db);
 } elseif ($request === '/login') {
-    if(isset($_SESSION['user'])){
+    if (isset($_SESSION['user'])) {
         header('Location: /');
         exit;
     }
     require_once __DIR__ . '/../views/login.php';
 } elseif ($request === '/register') {
-    if(isset($_SESSION['user'])){
+    if (isset($_SESSION['user'])) {
         header('Location: /');
         exit;
     }
@@ -69,15 +69,22 @@ if ($request === '/' || $request === '/index.php') {
     $linkStats = getLinkStats($_POST['link_id'], $_SESSION['user']['id'], $db);
     require __DIR__ . '/../views/stats.php';
 } elseif ($request === '/admin') {
-    if(isset($_SESSION['user']) && $_SESSION['user']['role'] === 'admin'){
+    if (isset($_SESSION['user']) && $_SESSION['user']['role'] === 'admin') {
         require_once __DIR__ . '/../src/AdminManager.php';
         $allLinks = getAllLinksForAdmin($db);
         require_once __DIR__ . '/../views/admin.php';
         getAllLinksForAdmin($db);
-    }else{
+    } else {
         header('Location: /');
         exit;
     }
+} elseif ($request === '/admin-delete') {
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        header('Location: /');
+        exit;
+    }
+    require_once __DIR__ . '/../src/AdminManager.php';
+    deleteLink($_POST['link_id'], $db);
 } else {
     $shortCode = ltrim($request, '/');
     require_once __DIR__ . '/../src/UrlManager.php';

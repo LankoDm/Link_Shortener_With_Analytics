@@ -25,3 +25,28 @@ function getAllLinksForAdmin($dbConnection)
     return $linksForAdmin;
 }
 
+function deleteLink($id, $dbConnection)
+{
+    if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
+        header('Location: /');
+        exit;
+    }
+
+    $query = "DELETE FROM links WHERE id = :id";
+    $result = $dbConnection->prepare($query);
+    try {
+        $result->execute(['id' => $id]);
+        if ($result->rowCount() > 0) {
+            $_SESSION['SuccessMessage'] = ["Посилання успішно видалено!"];
+        } else {
+            $_SESSION['ErrorMessage'] = ["Посилання не знайдено!"];
+        }
+        header('Location: /admin');
+        exit;
+    } catch (PDOException $e) {
+        $_SESSION['ErrorMessage'] = ["Помилка при видаленні!"];
+        header('Location: /admin');
+        exit;
+    }
+
+}
