@@ -18,7 +18,7 @@ function loginUser($dbConnection)
     $dataUser = $user->fetch();
 
     if ($dataUser && password_verify($password, $dataUser['password_hash'])) {
-        $_SESSION['user']['id'] = $dataUser['id'];
+        $_SESSION['user'] = ['id' => $dataUser['id'], 'role' => $dataUser['role']];
         header('Location: /');
         exit;
     } else {

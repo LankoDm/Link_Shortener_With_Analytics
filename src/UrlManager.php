@@ -101,13 +101,14 @@ function deleteLinkForUser($link_id, $user_id, $dbConnection)
     }
 }
 
-function getLinkStats($link_id, $user_id, $dbConnection){
+function getLinkStats($link_id, $user_id, $dbConnection)
+{
     $query = "SELECT clicks.ip_address, clicks.user_agent, clicks.clicked_at FROM clicks JOIN links ON clicks.link_id = links.id WHERE clicks.link_id = :link_id AND links.user_id = :user_id ORDER BY clicks.clicked_at DESC";
     $result = $dbConnection->prepare($query);
-    try{
+    try {
         $result->execute(['link_id' => $link_id, 'user_id' => $user_id]);
         $fullStats = $result->fetchAll();
-    }catch(PDOException $e){
+    } catch (PDOException $e) {
         $_SESSION['ErrorMessage'] = ["Сталась помилка, ми це вирішуємо!"];
         return [];
     }
