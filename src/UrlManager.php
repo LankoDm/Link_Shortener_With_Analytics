@@ -31,15 +31,18 @@ function saveUrl($dbConnection)
     }
 }
 
-function generateShortUrlForUser($dbConnection)
+function generateShortUrlForUser($limit, $offset, $dbConnection)
 {
     $host = $_SERVER['HTTP_HOST'];
     $arrayCustomLinks = [];
 
-    $query = "SELECT links.id, links.original_url, links.short_code, COUNT(clicks.id) as clicks_count FROM links LEFT JOIN clicks ON links.id = clicks.link_id WHERE links.user_id = :user_id GROUP BY links.id";
+    $query = "SELECT links.id, links.original_url, links.short_code, COUNT(clicks.id) as clicks_count FROM links LEFT JOIN clicks ON links.id = clicks.link_id WHERE links.user_id = :user_id GROUP BY links.id LIMIT :limit OFFSET :offset";
 
     $result = $dbConnection->prepare($query);
-    $result->execute(['user_id' => $_SESSION['user']['id']]);
+    $result->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
+    $result->bindValue(':offset', (int)$offset, PDO::PARAM_INT);
+    $result->bindValue(':user_id', $_SESSION['user']['id'], PDO::PARAM_INT);
+    $result->execute();
     $arrayLinksFromDB = $result->fetchAll();
 
     foreach ($arrayLinksFromDB as $value) {
@@ -52,6 +55,14 @@ function generateShortUrlForUser($dbConnection)
     }
 
     return $arrayCustomLinks;
+}
+
+function getCountLinksForUser($user_id, $dbConnection)
+{
+    $query = "SELECT COUNT(*) FROM links WHERE user_id = :user_id";
+    $result = $dbConnection->prepare($query);
+    $result->execute(['user_id' => $user_id]);
+    return $result->fetchColumn();
 }
 
 function redirectByShortCode($dbConnection, $shortCode)

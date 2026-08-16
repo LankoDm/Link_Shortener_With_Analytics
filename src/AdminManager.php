@@ -1,14 +1,16 @@
 <?php
 
-function getAllLinksForAdmin($dbConnection)
+function getAllLinksForAdmin($limit, $offset, $dbConnection)
 {
     $host = $_SERVER['HTTP_HOST'];
     $linksForAdmin = [];
 
-    $query = "SELECT links.id AS link_id, links.short_code, links.original_url, users.email FROM links JOIN users ON links.user_id = users.id ORDER BY links.created_at DESC";
-
+    $query = "SELECT links.id AS link_id, links.short_code, links.original_url, users.email FROM links JOIN users ON links.user_id = users.id ORDER BY links.created_at DESC LIMIT :limit OFFSET :offset";
+    $result = $dbConnection->prepare($query);
+    $result->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
+    $result->bindValue(':offset', (int)$offset, PDO::PARAM_INT);
     try {
-        $result = $dbConnection->query($query);
+        $result->execute();
         $arrayLinksFromDB = $result->fetchAll();
         foreach ($arrayLinksFromDB as $value) {
             $linksForAdmin[] = [
@@ -49,4 +51,11 @@ function deleteLink($id, $dbConnection)
         exit;
     }
 
+}
+
+function getTotalLinksCount($dbConnection)
+{
+    $query = "SELECT COUNT(*) AS count_links FROM links";
+    $result = $dbConnection->query($query);
+    return $result->fetchColumn();
 }

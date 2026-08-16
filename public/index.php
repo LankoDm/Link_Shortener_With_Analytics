@@ -8,12 +8,22 @@ $db = connectDB();
 
 $request = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+
 if ($request === '/' || $request === '/index.php') {
     $userLinks = [];
 
     if (isset($_SESSION['user']['id'])) {
         require_once __DIR__ . '/../src/UrlManager.php';
-        $userLinks = generateShortUrlForUser($db);
+        $limit = 5;
+        $maxPage = ceil(getCountLinksForUser($_SESSION['user']['id'], $db)/$limit);
+
+        if ($page < 1 || ($maxPage > 0 && $page > $maxPage)) {
+            $page = 1;
+        }
+
+        $offset = $limit * ($page - 1);
+        $userLinks = generateShortUrlForUser($limit, $offset, $db);
     }
 
     require_once __DIR__ . '/../views/home.php';
@@ -71,9 +81,18 @@ if ($request === '/' || $request === '/index.php') {
 } elseif ($request === '/admin') {
     if (isset($_SESSION['user']) && $_SESSION['user']['role'] === 'admin') {
         require_once __DIR__ . '/../src/AdminManager.php';
-        $allLinks = getAllLinksForAdmin($db);
+        $limit = 5;
+        $maxPage = ceil(getTotalLinksCount($db)/$limit);
+
+        if ($page < 1 || ($maxPage > 0 && $page > $maxPage)) {
+            $page = 1;
+        }
+
+        $offset = $limit * ($page - 1);
+
+        $allLinks = getAllLinksForAdmin($limit, $offset, $db);
+
         require_once __DIR__ . '/../views/admin.php';
-        getAllLinksForAdmin($db);
     } else {
         header('Location: /');
         exit;
