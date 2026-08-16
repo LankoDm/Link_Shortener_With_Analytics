@@ -36,6 +36,10 @@ if ($request === '/' || $request === '/index.php') {
 } elseif ($request === '/delete') {
     require_once __DIR__ . '/../src/UrlManager.php';
     deleteLinkForUser($_POST['link_id'], $_SESSION['user']['id'], $db);
+} elseif ($request === '/stats') {
+    require_once __DIR__ . '/../src/UrlManager.php';
+    $linkStats = getLinkStats($_POST['link_id'], $_SESSION['user']['id'], $db);
+    require __DIR__ . '/../views/stats.php';
 } else {
     $shortCode = ltrim($request, '/');
     require_once __DIR__ . '/../src/UrlManager.php';
