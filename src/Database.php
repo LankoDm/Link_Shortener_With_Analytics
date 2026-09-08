@@ -8,11 +8,10 @@ function connectDB()
 
     try {
         $dbh = new PDO($dsn, $config['user'], $config['password']);
-
         $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
         return $dbh;
     } catch (PDOException $e) {
-        die("Помилка: " . $e->getMessage());
+        http_response_code(500);
+        exit("Помилка підключення до бази даних.");
     }
 }

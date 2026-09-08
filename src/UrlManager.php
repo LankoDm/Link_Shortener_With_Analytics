@@ -1,5 +1,10 @@
 <?php
 
+function getScheme()
+{
+    return (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+}
+
 function saveUrl($dbConnection)
 {
     $originalUrl = $_POST['original_url'];
@@ -34,9 +39,10 @@ function saveUrl($dbConnection)
 function generateShortUrlForUser($limit, $offset, $dbConnection)
 {
     $host = $_SERVER['HTTP_HOST'];
+    $scheme = getScheme();
     $arrayCustomLinks = [];
 
-    $query = "SELECT links.id, links.original_url, links.short_code, COUNT(clicks.id) as clicks_count FROM links LEFT JOIN clicks ON links.id = clicks.link_id WHERE links.user_id = :user_id GROUP BY links.id LIMIT :limit OFFSET :offset";
+    $query = "SELECT links.id, links.original_url, links.short_code, COUNT(clicks.id) as clicks_count FROM links LEFT JOIN clicks ON links.id = clicks.link_id WHERE links.user_id = :user_id GROUP BY links.id ORDER BY links.created_at DESC LIMIT :limit OFFSET :offset";
 
     $result = $dbConnection->prepare($query);
     $result->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
@@ -48,7 +54,7 @@ function generateShortUrlForUser($limit, $offset, $dbConnection)
     foreach ($arrayLinksFromDB as $value) {
         $arrayCustomLinks[] = [
             'link_id' => $value['id'],
-            'short_url' => 'http://' . $host . '/' . $value['short_code'],
+            'short_url' => $scheme . '://' . $host . '/' . $value['short_code'],
             'original_url' => $value['original_url'],
             'clicks_count' => $value['clicks_count']
         ];
@@ -125,5 +131,5 @@ function getLinkStats($link_id, $user_id, $dbConnection)
         $_SESSION['ErrorMessage'] = ["Сталась помилка, ми це вирішуємо!"];
         return [];
     }
-    return $fullStats ?? NULL;
+    return $fullStats ?? [];
 }

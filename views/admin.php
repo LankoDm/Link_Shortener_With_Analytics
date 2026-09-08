@@ -2,7 +2,7 @@
 
     <div class="row justify-content-center">
         <div class="col-md-12">
-            <div class="card shadow-sm border-danger"> <!-- Червона рамка, щоб пам'ятати, що це адмінка -->
+            <div class="card shadow-sm border-danger">
                 <div class="card-header bg-danger text-white">
                     <h4 class="mb-0">Панель Адміністратора</h4>
                 </div>
@@ -10,7 +10,6 @@
 
                     <h5 class="mb-4">Всі посилання в системі</h5>
 
-                    <!-- БЛОК ВИВЕДЕННЯ ПОВІДОМЛЕНЬ -->
                     <?php if (!empty($_SESSION['ErrorMessage'])): ?>
                         <div class="alert alert-danger text-center">
                             <?php foreach ($_SESSION['ErrorMessage'] as $error): ?>
@@ -28,7 +27,6 @@
                         </div>
                         <?php unset($_SESSION['SuccessMessage']); ?>
                     <?php endif; ?>
-                    <!-- КІНЕЦЬ БЛОКУ ПОВІДОМЛЕНЬ -->
 
                     <?php if (!empty($allLinks)): ?>
                         <div class="table-responsive">
@@ -38,7 +36,6 @@
                                     <th scope="col">Власник (Email)</th>
                                     <th scope="col">Коротке посилання</th>
                                     <th scope="col">Оригінал</th>
-                                    <!-- Нова колонка -->
                                     <th scope="col" class="text-center">Дії</th>
                                 </tr>
                                 </thead>
@@ -56,10 +53,9 @@
                                                 <?php echo htmlspecialchars($link['original_url']); ?>
                                             </a>
                                         </td>
-                                        <!-- Кнопка видалення для адміна -->
                                         <td class="text-center">
                                             <form action="/admin-delete" method="POST" class="d-inline" onsubmit="return confirm('Ви впевнені, що хочете видалити посилання цього користувача?');">
-                                                <!-- Прихований параметр з ID посилання -->
+                                                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(generateCsrfToken()); ?>">
                                                 <input type="hidden" name="link_id" value="<?php echo htmlspecialchars($link['link_id']); ?>">
                                                 <button type="submit" class="btn btn-sm btn-danger">Видалити</button>
                                             </form>
@@ -70,12 +66,10 @@
                             </table>
                         </div>
 
-                        <!-- ПАГІНАЦІЯ -->
                         <?php if (isset($maxPage) && $maxPage > 1): ?>
                             <nav aria-label="Пагінація сторінок" class="mt-4">
                                 <ul class="pagination justify-content-center mb-0">
                                     <?php for ($i = 1; $i <= $maxPage; $i++): ?>
-                                        <!-- Якщо це поточна сторінка, додаємо клас active для підсвічування -->
                                         <li class="page-item <?php echo (isset($page) && $i === $page) ? 'active' : ''; ?>">
                                             <a class="page-link" href="/admin?page=<?php echo $i; ?>">
                                                 <?php echo $i; ?>
@@ -85,7 +79,6 @@
                                 </ul>
                             </nav>
                         <?php endif; ?>
-                        <!-- КІНЕЦЬ ПАГІНАЦІЇ -->
 
                     <?php else: ?>
                         <p class="text-center text-muted">В системі ще немає посилань.</p>

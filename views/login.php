@@ -6,7 +6,30 @@
                 <div class="card-body p-5">
                     <h3 class="card-title text-center mb-4">Вхід в акаунт</h3>
 
+                    <?php if (!empty($_SESSION['ErrorMessage'])): ?>
+                        <div class="alert alert-danger">
+                            <ul class="mb-0">
+                                <?php foreach ($_SESSION['ErrorMessage'] as $error): ?>
+                                    <li><?php echo htmlspecialchars($error); ?></li>
+                                <?php endforeach; ?>
+                            </ul>
+                        </div>
+                        <?php unset($_SESSION['ErrorMessage']); ?>
+                    <?php endif; ?>
+
+                    <?php if (!empty($_SESSION['SuccessMessage'])): ?>
+                        <div class="alert alert-success">
+                            <ul class="mb-0">
+                                <?php foreach ($_SESSION['SuccessMessage'] as $success): ?>
+                                    <li><?php echo htmlspecialchars($success); ?></li>
+                                <?php endforeach; ?>
+                            </ul>
+                        </div>
+                        <?php unset($_SESSION['SuccessMessage']); ?>
+                    <?php endif; ?>
+
                     <form action="/login-process" method="POST">
+                        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(generateCsrfToken()); ?>">
                         <div class="mb-3">
                             <label for="email" class="form-label">Електронна пошта</label>
                             <input type="email" class="form-control form-control-lg" id="email" name="email" required>

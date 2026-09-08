@@ -6,7 +6,6 @@
                 <div class="card-body p-5">
                     <h3 class="card-title text-center mb-4">Реєстрація</h3>
 
-                    <!-- Виведення помилок із сесії -->
                     <?php if (!empty($_SESSION['ErrorMessage'])): ?>
                         <div class="alert alert-danger">
                             <ul class="mb-0">
@@ -15,10 +14,9 @@
                                 <?php endforeach; ?>
                             </ul>
                         </div>
-                        <?php unset($_SESSION['ErrorMessage']); // Стираємо помилку після показу ?>
+                        <?php unset($_SESSION['ErrorMessage']); ?>
                     <?php endif; ?>
 
-                    <!-- Виведення успішних повідомлень із сесії -->
                     <?php if (!empty($_SESSION['SuccessMessage'])): ?>
                         <div class="alert alert-success">
                             <ul class="mb-0">
@@ -27,13 +25,14 @@
                                 <?php endforeach; ?>
                             </ul>
                         </div>
-                        <?php unset($_SESSION['SuccessMessage']); // Стираємо повідомлення після показу ?>
+                        <?php unset($_SESSION['SuccessMessage']); ?>
                     <?php endif; ?>
 
                     <form action="/register-process" method="POST">
+                        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(generateCsrfToken()); ?>">
                         <div class="mb-3">
                             <label for="login" class="form-label">Ваш нікнейм</label>
-                            <input type="text" class="form-control form-control-lg" id="login" name="login" required>
+                            <input type="text" class="form-control form-control-lg" id="login" name="login" minlength="3" maxlength="100" required>
                         </div>
 
                         <div class="mb-3">

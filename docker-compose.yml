@@ -8,19 +8,22 @@ services:
       - ./:/var/www/html/
     depends_on:
       - db
+    environment:
+      DB_HOST: db
+      DB_NAME: ${MYSQL_DATABASE}
+      DB_USER: ${MYSQL_USER}
+      DB_PASSWORD: ${MYSQL_PASSWORD}
     command: >
       bash -c "sed -i 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/000-default.conf && a2enmod rewrite && docker-php-ext-install pdo_mysql && apache2-foreground"
 
   db:
     image: mysql:8.0
     container_name: url_shortener_db
-    ports:
-      - "3306:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: root_password
-      MYSQL_DATABASE: shortener_db
-      MYSQL_USER: dev_user
-      MYSQL_PASSWORD: dev_password
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
       - db_data:/var/lib/mysql
 volumes:

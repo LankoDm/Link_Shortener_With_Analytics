@@ -15,15 +15,15 @@
         <a class="navbar-brand" href="/"> Урізач URL</a>
 
         <div class="d-flex">
-            <!-- Перевіряємо, чи користувач авторизований -->
             <?php if (isset($_SESSION['user']['id'])): ?>
 
-                <!-- Показуємо кнопку виходу -->
-                <a href="/logout" class="btn btn-outline-danger">Вийти</a>
+                <form action="/logout" method="POST" class="d-inline">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(generateCsrfToken()); ?>">
+                    <button type="submit" class="btn btn-outline-danger">Вийти</button>
+                </form>
 
             <?php else: ?>
 
-                <!-- Показуємо кнопки для гостей -->
                 <a href="/login" class="btn btn-outline-light me-2">Увійти</a>
                 <a href="/register" class="btn btn-primary">Зареєструватись</a>
 

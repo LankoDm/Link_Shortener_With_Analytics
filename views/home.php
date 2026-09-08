@@ -9,7 +9,6 @@
 
                         <h2 class="card-title text-center mb-4">Вставте довге посилання</h2>
 
-                        <!-- Виведення помилок та успіхів через сесію -->
                         <?php if (!empty($_SESSION['ErrorMessage'])): ?>
                             <div class="alert alert-danger text-center">
                                 <?php foreach ($_SESSION['ErrorMessage'] as $error): ?>
@@ -29,6 +28,7 @@
                         <?php endif; ?>
 
                         <form action="/save" method="POST">
+                            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(generateCsrfToken()); ?>">
                             <div class="input-group mb-4">
                                 <input type="url" name="original_url" class="form-control form-control-lg"
                                        placeholder="https://example.com/very-long-link..." required>
@@ -40,7 +40,6 @@
 
                         <h4 class="text-center mb-4">Мої посилання</h4>
 
-                        <!-- Таблиця з посиланнями -->
                         <?php if (!empty($userLinks)): ?>
                             <div class="table-responsive">
                                 <table class="table table-hover align-middle">
@@ -49,7 +48,6 @@
                                         <th scope="col">Коротке посилання</th>
                                         <th scope="col">Оригінальне посилання</th>
                                         <th scope="col" class="text-center">Переходи</th>
-                                        <!-- Нова колонка для кнопок -->
                                         <th scope="col" class="text-center">Дії</th>
                                     </tr>
                                     </thead>
@@ -74,17 +72,12 @@
                                                 </span>
                                             </td>
 
-                                            <!-- Додаємо дві окремі форми для дій -->
                                             <td class="text-center text-nowrap">
 
-                                                <!-- Кнопка Статистики -->
-                                                <form action="/stats" method="POST" class="d-inline">
-                                                    <input type="hidden" name="link_id" value="<?php echo htmlspecialchars($link['link_id']); ?>">
-                                                    <button type="submit" class="btn btn-sm btn-outline-info me-1">Статистика</button>
-                                                </form>
+                                                <a href="/stats?link_id=<?php echo htmlspecialchars($link['link_id']); ?>" class="btn btn-sm btn-outline-info me-1">Статистика</a>
 
-                                                <!-- Кнопка Видалення -->
                                                 <form action="/delete" method="POST" class="d-inline" onsubmit="return confirm('Ви впевнені, що хочете видалити це посилання? Вся статистика переходів також буде знищена.');">
+                                                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(generateCsrfToken()); ?>">
                                                     <input type="hidden" name="link_id" value="<?php echo htmlspecialchars($link['link_id']); ?>">
                                                     <button type="submit" class="btn btn-sm btn-outline-danger">Видалити</button>
                                                 </form>
@@ -96,7 +89,6 @@
                                 </table>
                             </div>
 
-                            <!-- ПАГІНАЦІЯ -->
                             <?php if (isset($maxPage) && $maxPage > 1): ?>
                                 <nav aria-label="Пагінація сторінок" class="mt-4">
                                     <ul class="pagination justify-content-center mb-0">
@@ -110,7 +102,6 @@
                                     </ul>
                                 </nav>
                             <?php endif; ?>
-                            <!-- КІНЕЦЬ ПАГІНАЦІЇ -->
 
                         <?php else: ?>
                             <p class="text-center text-muted">Ви ще не створили жодного короткого посилання. Спробуйте

@@ -1,8 +1,8 @@
 <?php
 
 return [
-    'host' => 'db',
-    'dbname' => 'shortener_db',
-    'user' => 'dev_user',
-    'password' => 'dev_password'
+    'host' => getenv('DB_HOST') ?: 'db',
+    'dbname' => getenv('DB_NAME') ?: 'shortener_db',
+    'user' => getenv('DB_USER') ?: 'dev_user',
+    'password' => getenv('DB_PASSWORD') ?: 'dev_password'
 ];

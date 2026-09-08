@@ -18,6 +18,7 @@ function loginUser($dbConnection)
     $dataUser = $user->fetch();
 
     if ($dataUser && password_verify($password, $dataUser['password_hash'])) {
+        session_regenerate_id(true);
         $_SESSION['user'] = ['id' => $dataUser['id'], 'role' => $dataUser['role']];
         header('Location: /');
         exit;
